@@ -6,8 +6,8 @@
 
 'use strict';
 
-var fs = require('fs');
-var gulp = require('gulp');
+const fs = require('fs');
+const gulp = require('gulp');
 
 /**
  *  This will load all js or coffee files in the gulp directory

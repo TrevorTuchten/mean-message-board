@@ -1,39 +1,29 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const jwt = require('jwt-simple');
+const moment = require('moment');
+
+const auth = require('./controllers/auth');
+const message = require('./controllers/message');
+const checkAuthenticated = require('./services/checkAuthenticated');
+const cors = require('./services/cors');
 
 const app = express();
 
-let Message = mongoose.model('Message', {
-	msg: String
-});
-
+// Middleware
 app.use(bodyParser.json());
+app.use(cors);
 
-// Allow CORS
-app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-	next();
-})
+// Requests
+app.get('/api/message', message.get);
 
-GetMessages = (req, res) => {
-	Message.find({}).exec((err, result) => {
-		res.send(result);
-	})
-}
+app.post('/api/message', checkAuthenticated, message.post);
 
-app.get('/api/message', GetMessages);
+app.post('/auth/register', auth.register);
 
-app.post('/api/message', (req, res) => {
-	console.log(req.body); //TODO: Remove Me!!
 
-	let message = new Message(req.body);
-	message.save();
-
-	res.status(200);
-})
-
+// Connection
 mongoose.connect("mongodb://localhost:27017/test", (err, db) => {
 	if (!err) {
 		console.log('we are connected to mongo'); //TODO: Remove Me!!
